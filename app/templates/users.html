@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>User List</title>
+    <title>Users in your OU</title>
 </head>
 <body>
     <header>
@@ -12,30 +12,19 @@
         <div class="user-info">
             {% if current_user.is_authenticated %}
                 <span>Welcome, {{ current_user.username }}</span>
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
         </div>
     </header>
     <main>
-        <h2>Users</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Full Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.full_name }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h2>Users in your OU</h2>
+        <ul>
+            {% for user in users %}
+                <li>{{ user.cn }} ({{ user.uid }})</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('home') }}">Home</a> |
+        <a href="{{ url_for('logout') }}">Logout</a>
     </main>
 </body>
 </html>

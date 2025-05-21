@@ -1,7 +1,7 @@
 from ldap3 import Server, Connection, ALL, NTLM, MODIFY_REPLACE
 
-LDAP_SERVER = 'ldap://test.aispit.net'
-BASE_DN = 'dc=example,dc=com'  # Adjust according to your LDAP structure
+LDAP_SERVER = 'ldap://localhost:389'  # Replace with your LDAP server address
+BASE_DN = 'dc=nodomain'  # Adjust according to your LDAP structure
 
 def authenticate(username, password):
     server = Server(LDAP_SERVER, get_info=ALL)
