@@ -1,0 +1,8 @@
+Flask
+Flask-LDAP3-Login
+Flask-Login
+Flask-WTF
+python-ldap
+gunicorn
+Werkzeug
+requests
