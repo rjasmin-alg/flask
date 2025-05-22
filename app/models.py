@@ -20,7 +20,6 @@ class User(UserMixin):
         server = Server(ldap_host, use_ssl=use_ssl, get_info=ALL)
         conn = Connection(server, user=bind_dn, password=bind_password, auto_bind=True)
 
-        # Build search base and user_rdn robustly
         if user_dn:
             search_base = f"{user_dn},{base_dn}"
             user_rdn = f"uid={user_id},{user_dn},{base_dn}"
@@ -39,7 +38,6 @@ class User(UserMixin):
 
     @staticmethod
     def list_users_in_ou(ou=None):
-        from flask import current_app
         ldap_host = current_app.config['LDAP_HOST']
         base_dn = current_app.config['LDAP_BASE_DN']
         user_dn = current_app.config['LDAP_USER_DN']
@@ -50,7 +48,6 @@ class User(UserMixin):
         server = Server(ldap_host, use_ssl=use_ssl, get_info=ALL)
         conn = Connection(server, user=bind_dn, password=bind_password, auto_bind=True)
 
-        # Use the user's OU or the default user_dn
         if ou:
             search_base = f"{ou},{base_dn}"
         elif user_dn:

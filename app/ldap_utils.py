@@ -1,4 +1,5 @@
-from ldap3 import Server, Connection, ALL, NTLM, MODIFY_REPLACE
+from ldap3 import Server, Connection, ALL, MODIFY_REPLACE
+from flask import current_app
 
 LDAP_SERVER = 'ldap://localhost:389'  # Replace with your LDAP server address
 BASE_DN = 'dc=nodomain'  # Adjust according to your LDAP structure
@@ -67,3 +68,28 @@ def get_all_users():
             users.append(user)
         conn.unbind()
     return users
+
+def change_user_password(username, new_password):
+    ldap_host = current_app.config['LDAP_HOST']
+    base_dn = current_app.config['LDAP_BASE_DN']
+    user_dn = current_app.config['LDAP_USER_DN']
+    bind_dn = current_app.config['LDAP_BIND_DN']
+    bind_password = current_app.config['LDAP_BIND_PASSWORD']
+    use_ssl = current_app.config['LDAP_USE_SSL']
+
+    server = Server(ldap_host, use_ssl=use_ssl, get_info=ALL)
+    conn = Connection(server, user=bind_dn, password=bind_password, auto_bind=True)
+
+    # Build user DN
+    if user_dn:
+        user_rdn = f"uid={username},{user_dn},{base_dn}"
+    else:
+        user_rdn = f"uid={username},{base_dn}"
+
+    # Attempt to change the password
+    try:
+        conn.modify(user_rdn, {'userPassword': [(MODIFY_REPLACE, [new_password])]})
+        return conn.result['result'] == 0
+    except Exception as e:
+        print(f"Password change failed for {username}: {e}")
+        return False

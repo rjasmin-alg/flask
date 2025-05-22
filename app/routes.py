@@ -1,13 +1,26 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, session, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app
 from app.models import User
 from ldap3 import Server, Connection, ALL
+import requests
 
 @app.route('/')
 @login_required
 def home():
-    return render_template('home.html', user=current_user)
+    location = session.get('location')
+    weather = None
+    if location:
+        try:
+            # Get plain text weather from wttr.in
+            resp = requests.get(f'https://wttr.in/{location}?format=3', timeout=3)
+            if resp.status_code == 200:
+                weather = resp.text
+            else:
+                weather = "Could not fetch weather."
+        except Exception:
+            weather = "Could not fetch weather."
+    return render_template('home.html', user=current_user, weather=weather)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -57,3 +70,13 @@ def list_users():
             break
     users = User.list_users_in_ou(user_ou)
     return render_template('users.html', users=users)
+
+@app.route('/change_location', methods=['GET', 'POST'])
+@login_required
+def change_location():
+    if request.method == 'POST':
+        location = request.form['location']
+        session['location'] = location
+        flash('Location updated!', 'success')
+        return redirect(url_for('home'))
+    return render_template('change_location.html')

@@ -1,6 +1,7 @@
-from flask import Blueprint, request, redirect, url_for, flash, session
+from flask import Blueprint, request, redirect, url_for, flash, session, render_template
+from flask_login import login_required, current_user
 from ldap3 import Server, Connection, ALL, NTLM
-from app.ldap_utils import search_users, change_user_password
+from app.ldap_utils import change_user_password
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -28,15 +29,14 @@ def logout():
     return redirect(url_for('auth.login'))
 
 @auth_bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
 def change_password():
-    if 'username' not in session:
-        return redirect(url_for('auth.login'))
-
     if request.method == 'POST':
         new_password = request.form['new_password']
-        if change_password(session['username'], new_password):
+        # Use current_user.username instead of session['username']
+        if change_user_password(current_user.username, new_password):
             flash('Password changed successfully!', 'success')
-            return redirect(url_for('routes.index'))
+            return redirect(url_for('auth.login'))
         else:
             flash('Failed to change password. Please try again.', 'danger')
 

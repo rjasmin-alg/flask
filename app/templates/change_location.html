@@ -1,13 +1,15 @@
-{% extends "base.html" %}
-{% block content %}
-  <h2>Change Location</h2>
-  <form method="post">
-    <label for="location">Location (city):</label>
-    <input type="text" name="location" id="location" value="{{ location or '' }}">
-    <button type="submit">Update Location</button>
-  </form>
-  {% if weather %}
-    <h3>Weather for {{ location }}:</h3>
-    <pre>{{ weather }}</pre>
-  {% endif %}
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change Location</title>
+</head>
+<body>
+    <h2>Change Your Location</h2>
+    <form method="POST">
+        <label for="location">Location (city or place):</label>
+        <input type="text" id="location" name="location" required>
+        <button type="submit">Save</button>
+    </form>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
